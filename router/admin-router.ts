@@ -19,6 +19,15 @@ adminRouter.post('/join-collection', async (req, res) => {
   return handleResponse(req, res, response)
 })
 
+adminRouter.get('/get-location', async (req, res) => {
+  const ipAddress = req.headers['x-forwarded-for'] ? (req.headers['x-forwarded-for'] as string).split(',')[0] : req.ip
+  if (!ipAddress) {
+    return handleResponse(req, res, { success: false, error: errors.IP_ADDRESS_REQUIRED })
+  }
+  const response = await AdminController.getInstance().getCountryGroupFromIP(ipAddress)
+  return handleResponse(req, res, response)
+})
+
 adminRouter.post('/modal-data', async (req, res) => {
   const html = `<div id="collection-join-modal" style="display: none;">
   <div data-portal-id="modal:r6h:" class="isolate" style="opacity: 1;">

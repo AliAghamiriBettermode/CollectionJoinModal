@@ -34,4 +34,25 @@ export const errors = {
     },
     responseCode: 400,
   },
+  IP_ADDRESS_REQUIRED: {
+    key: 'ip_address_required',
+    message: {
+      en: 'IP address is required.',
+    },
+    responseCode: 400,
+  },
+  INVALID_IP_ADDRESS: {
+    key: 'invalid_ip_address',
+    message: {
+      en: 'Invalid IP address.',
+    },
+    responseCode: 400,
+  },
+  IP_LOOKUP_FAILED: {
+    key: 'ip_lookup_failed',
+    message: {
+      en: 'IP lookup failed.',
+    },
+    responseCode: 500,
+  },
 }
