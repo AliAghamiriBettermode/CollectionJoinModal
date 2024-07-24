@@ -13,16 +13,6 @@ This project handles showing a modal after a user logged in to join a collection
     ```html
     <script>
     async function handleSelectiveJoin() {
-        const response = await fetch('https://example.com/admin/modal-data', {
-            method: 'POST',
-            body: new URLSearchParams(),
-            redirect: 'follow',
-        })
-        const result = await response.json()
-        const modalHTML = result.data.html
-   
-        document.body.insertAdjacentHTML('beforeend', modalHTML)
-
         function hideModal() {
             const modal = document.getElementById('collection-join-modal')
             modal.style.display = 'none'
@@ -34,6 +24,16 @@ This project handles showing a modal after a user logged in to join a collection
         }
 
         if (localStorage.getItem('collection-join-modal') !== 'true' && !(__BM_DATA__.authToken.member.id.toLowerCase().includes('guest'))) {
+            const response = await fetch('https://example.com/admin/modal-data', {
+                method: 'POST',
+                body: new URLSearchParams(),
+                redirect: 'follow',
+            })
+            const result = await response.json()
+            const modalHTML = result.data.html
+   
+            document.body.insertAdjacentHTML('beforeend', modalHTML)
+            
             showModal()
             try {
                 const memberId = __BM_DATA__.authToken.member.id
