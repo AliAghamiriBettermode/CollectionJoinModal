@@ -1,6 +1,12 @@
-export const COLLECTIONS: { id: string, name: string, spaces: { nodes: { id: string, name: string }[] } }[] = [
+export const COLLECTIONS: {
+  id: string,
+  countryGroup: string,
+  name: string,
+  spaces: { nodes: { id: string, name: string }[] }
+}[] = [
   {
     'id': 'fcR5o89NpCmU',
+    'countryGroup': 'US',
     'name': 'Perks (US)',
     'spaces': {
       'nodes': [
@@ -25,6 +31,7 @@ export const COLLECTIONS: { id: string, name: string, spaces: { nodes: { id: str
   },
   {
     'id': 'Idvu5oZaUyy8',
+    'countryGroup': 'UK',
     'name': 'Perks (UK)',
     'spaces': {
       'nodes': [
@@ -45,6 +52,7 @@ export const COLLECTIONS: { id: string, name: string, spaces: { nodes: { id: str
   },
   {
     'id': '5nkG3YqUnLiV',
+    'countryGroup': 'AU',
     'name': 'Perks (AU)',
     'spaces': {
       'nodes': [

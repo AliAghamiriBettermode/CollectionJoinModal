@@ -55,4 +55,18 @@ export const errors = {
     },
     responseCode: 500,
   },
+  JOIN_SPACE_FAILED: {
+    key: 'join_space_failed',
+    message: {
+      en: 'Join space failed.',
+    },
+    responseCode: 500,
+  },
+  UPDATE_PROFILE_FIELD_FAILED: {
+    key: 'update_profile_field_failed',
+    message: {
+      en: 'Update profile field failed.',
+    },
+    responseCode: 500,
+  },
 }

@@ -20,51 +20,35 @@
       modal.style.display = 'flex'
     }
 
-    function handleButton(buttonId, collectionId) {
-      document.querySelectorAll(`button[data-block-id="${buttonId}"]`).forEach(button => {
-        button.addEventListener('click', () => {
-          const memberId = __BM_DATA__.authToken.member.id
-          const buttonLoading = document.querySelectorAll(`button[data-block-id="${buttonId}-loading"]`)[0]
-          if (buttonLoading.style.display === 'flex') {
-            return
-          }
-          button.style.display = 'none'
-          buttonLoading.style.display = 'flex'
-
-          const myHeaders = new Headers()
-          myHeaders.append('Content-Type', 'application/x-www-form-urlencoded')
-
-          const urlencoded = new URLSearchParams()
-          urlencoded.append('collection_id', collectionId)
-          urlencoded.append('member_id', memberId)
-
-          fetch('https://piranha-ruling-scarcely.ngrok-free.app/admin/join-collection', {
-            method: 'POST',
-            headers: myHeaders,
-            body: urlencoded,
-            redirect: 'follow',
-          })
-            .then((response) => response.text())
-            .then((result) => {
-              buttonLoading.style.display = 'none'
-              button.style.display = 'flex'
-              hideModal()
-            })
-            .catch((error) => {
-              buttonLoading.style.display = 'none'
-              button.style.display = 'flex'
-            })
-        })
-      })
-    }
-
-    result.data.buttons.forEach(b => {
-      handleButton(b.id, b.collection_id)
-    })
-    document.getElementById('collection-join-modal-close').addEventListener('click', hideModal)
     if (localStorage.getItem('collection-join-modal') !== 'true' && !(__BM_DATA__.authToken.member.id.toLowerCase().includes('guest'))) {
       showModal()
-      localStorage.setItem('collection-join-modal', 'true')
+      try {
+        const memberId = __BM_DATA__.authToken.member.id
+        const myHeaders = new Headers()
+        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded')
+        const urlencoded = new URLSearchParams()
+        urlencoded.append('member_id', memberId)
+        fetch('https://piranha-ruling-scarcely.ngrok-free.app/admin/join-collection', {
+          method: 'POST',
+          headers: myHeaders,
+          body: urlencoded,
+          redirect: 'follow',
+        })
+          .then((response) => response.json())
+          .then((result) => {
+            if (result.success) {
+              localStorage.setItem('collection-join-modal', 'true')
+              location.reload()
+            }
+            hideModal()
+          })
+          .catch((error) => {
+            hideModal()
+          })
+      } catch (e) {
+        console.error(e)
+        hideModal()
+      }
     }
   }
 

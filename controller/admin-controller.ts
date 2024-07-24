@@ -9,36 +9,41 @@ import { COUNTRIES } from '../consts/countries.js'
 class AdminController {
   static instance: AdminController
 
-  async joinCollection(collectionId: string, memberId: string) {
-    const collection = _.find(COLLECTIONS, { id: collectionId })
+  async joinCollection(ip: string, memberId: string) {
+    const countryGroup = await this.getCountryGroupFromIP(ip)
+    if (!countryGroup) {
+      return { success: false, error: errors.IP_LOOKUP_FAILED }
+    }
+    const collection = _.find(COLLECTIONS, { countryGroup: countryGroup })
     if (!collection) {
       return { success: false, error: errors.COLLECTION_NOT_FOUND }
     }
+    const res = await BettermodeService.getInstance().updateMemberField(memberId, 'country_group', countryGroup)
+    if (!res) {
+      return { success: false, error: errors.UPDATE_PROFILE_FIELD_FAILED }
+    }
     await BlueBird.mapSeries(collection.spaces.nodes, async (space) => {
-      await BettermodeService.getInstance().joinSpace(space.id, memberId)
+      const res = await BettermodeService.getInstance().joinSpace(space.id, memberId)
+      if (!res) {
+        return { success: false, error: errors.JOIN_SPACE_FAILED }
+      }
     })
     return { success: true }
   }
 
   async getCountryGroupFromIP(ip: string) {
     if (!ip.match(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/)) {
-      return { success: false, error: errors.INVALID_IP_ADDRESS }
+      return null
     }
     const geo = geoip.lookup(ip)
     if (!geo) {
-      return { success: false, error: errors.IP_LOOKUP_FAILED }
+      return null
     }
     const country = _.find(COUNTRIES, { countryCode: geo.country })
     if (!country) {
-      return { success: false, error: errors.IP_LOOKUP_FAILED }
+      return null
     }
-    return {
-      success: true,
-      data: {
-        geo,
-        countryGroup: country.countryGroup,
-      },
-    }
+    return country.countryGroup
   }
 
   static getInstance() {

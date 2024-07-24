@@ -7,10 +7,12 @@ import { handleResponse } from './utils/response-handler.js'
 import webhookRouter from './router/webhook-router.js'
 import dotenv from 'dotenv'
 import adminRouter from './router/admin-router.js'
+import BettermodeService from './service/bettermode-service.js'
 
 extendMorganTokens()
 dotenv.config()
 const app = express()
+const bettermodeService = BettermodeService.getInstance()
 
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms - :errors'))

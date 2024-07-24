@@ -3,6 +3,14 @@ import { encodeBase64 } from '../utils/utils.js'
 
 class BettermodeService {
   static instance: BettermodeService
+  accessToken: string | undefined
+
+  constructor() {
+    this.getMemberAccessToken(process.env.NETWORK_ID!, process.env.ADMIN_MEMBER_ID!).then((accessToken) => {
+      this.accessToken = accessToken
+      console.log('Custom App Access token:', this.accessToken)
+    })
+  }
 
   async handleSubscription(body: any) {
     // TODO: Implement this
@@ -38,23 +46,24 @@ class BettermodeService {
 
       return JSON.parse(response.body).data.limitedToken.accessToken
     } catch (e) {
-      console.error(e)
+      console.error('[getMemberAccessToken] Error', e)
       return null
     }
   }
 
   async joinSpace(spaceId: string, memberId: string) {
-    const accessToken = await this.getMemberAccessToken(process.env.NETWORK_ID!, process.env.ADMIN_MEMBER_ID!)
-    if (!accessToken) {
+    if (!this.accessToken) {
+      console.error('[joinSpace] Access token not found')
       return false
     }
-    const res = await got.post('https://api.bettermode.com', {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      json: {
-        query: `mutation AddSpaceMembers {
+    try {
+      const res = await got.post('https://api.bettermode.com', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+        json: {
+          query: `mutation AddSpaceMembers {
                                     addSpaceMembers(
                                         input: { memberId: "${memberId}" }
                                         spaceId: "${spaceId}"
@@ -68,10 +77,51 @@ class BettermodeService {
                                         }
                                     }
                                 }`,
-        variables: {},
-      },
-    })
-    console.log(res.body)
+          variables: {},
+        },
+      })
+      console.log(JSON.parse(res.body))
+      return true
+    } catch (e) {
+      console.error('[joinSpace] Error', e)
+      return false
+    }
+  }
+
+  async updateMemberField(memberId: string, key: string, value: string) {
+    if (!this.accessToken) {
+      console.error('[updateMemberField] Access token not found')
+      return false
+    }
+    try {
+      const res = await got.post('https://api.bettermode.com', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+        json: {
+          query: `mutation UpdateMember {
+                    updateMember(
+                        id: "${memberId}"
+                        input: { fields: [{ key: "${key}", value: "\\"${value}\\"" }] }
+                    ) {
+                        name
+                        id
+                        fields {
+                            key
+                            value
+                        }
+                    }
+                }`,
+          variables: {},
+        },
+      })
+      console.log(JSON.parse(res.body))
+      return true
+    } catch (e) {
+      console.error('[updateMemberField] Error', e)
+      return false
+    }
   }
 
   static getInstance() {
