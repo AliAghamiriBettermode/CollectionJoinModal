@@ -39,7 +39,7 @@ adminRouter.post('/modal-data', async (req, res) => {
                         </use>
                       </svg>
                     </span>
-                <span class="text-center text-xl block-text" data-block-id="title" data-block-name="text">Modifying Spaces...</span>
+                <span class="text-center text-xl block-text" data-block-id="title" data-block-name="text">Preparing your experience...</span>
               </div>
             </div>
           </div>
